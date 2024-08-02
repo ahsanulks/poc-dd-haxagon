@@ -25,6 +25,7 @@ services:
       - "8080:8080"
     networks:
       - app-network
+    entrypoint: [ "sh", "-c", "sleep 5 && ./myapp" ]
 
 networks:
   app-network:

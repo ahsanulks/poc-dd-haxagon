@@ -37,7 +37,7 @@ func (h *RegistrationHttpHandler) Register(c echo.Context) error {
 		return standardresponse.NewErrorResponse(c, err)
 	}
 
-	return c.JSON(200, map[string]interface{}{
+	return c.JSON(201, map[string]interface{}{
 		"message": "success",
 		"token":   token,
 	})

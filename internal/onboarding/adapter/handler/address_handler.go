@@ -45,7 +45,7 @@ func (h *AddressHttpHandler) AddAddress(c echo.Context) error {
 		return standardresponse.NewErrorResponse(c, err)
 	}
 
-	return c.JSON(200, map[string]any{
+	return c.JSON(201, map[string]any{
 		"id": address.ID,
 	})
 }

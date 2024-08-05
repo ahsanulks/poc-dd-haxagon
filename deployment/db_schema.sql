@@ -39,7 +39,3 @@ CREATE TABLE order_addresses (
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL
 );
-
--- Create schema for Order-Address relationship (one-to-one)
-ALTER TABLE orders
-ADD COLUMN address_id INT REFERENCES addresses (id) ON DELETE SET NULL;

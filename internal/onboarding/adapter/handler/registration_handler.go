@@ -23,6 +23,16 @@ type RegistrationBody struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
+// Register new user
+// @Summary Register new user
+// @Description Register new user
+// @Tags Users
+// @Accept application/json
+// @Produce application/json
+// @Router /users/register [post]
+// @Param body body RegistrationBody true "User data"
+// @Success 201 {object} standardresponse.StandardResponse[RegistrationResponse]
+// @Failure 400 {object} standardresponse.StandardResponse[any]
 func (h *RegistrationHttpHandler) Register(c echo.Context) error {
 	var req RegistrationBody
 	if err := c.Bind(&req); err != nil {
@@ -37,8 +47,11 @@ func (h *RegistrationHttpHandler) Register(c echo.Context) error {
 		return standardresponse.NewErrorResponse(c, err)
 	}
 
-	return c.JSON(201, map[string]interface{}{
-		"message": "success",
-		"token":   token,
+	return standardresponse.NewSuccessResponse(c, 201, RegistrationResponse{
+		Token: token,
 	})
+}
+
+type RegistrationResponse struct {
+	Token string `json:"token"`
 }

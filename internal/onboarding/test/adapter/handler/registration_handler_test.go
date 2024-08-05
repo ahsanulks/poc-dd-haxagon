@@ -11,6 +11,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/xeipuuv/gojsonschema"
 	"go.uber.org/mock/gomock"
 )
 
@@ -57,7 +58,19 @@ func TestRegistrationHttpHandler_Register(t *testing.T) {
 			err = h.Register(c)
 
 			assert.NoError(err)
+
 			assert.Equal(tt.expectedStatusCode, rec.Result().StatusCode)
+
+			schemaLoader := gojsonschema.NewReferenceLoader("file://schema/registration_schema.json")
+			documentLoader := gojsonschema.NewStringLoader(rec.Body.String())
+			result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+			assert.NoError(err)
+			if !result.Valid() {
+				for _, desc := range result.Errors() {
+					t.Errorf("- %s\n", desc)
+				}
+				t.Fatalf("JSON response does not match the schema")
+			}
 		})
 	}
 }

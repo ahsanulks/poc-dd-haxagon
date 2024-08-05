@@ -27,6 +27,17 @@ type AddAddressBody struct {
 	Longitude float64 `json:"longitude"`
 }
 
+// AddAddress
+// @Summary Add address
+// @Description Add new user address
+// @Tags Users
+// @Accept application/json
+// @Produce application/json
+// @Router /users/addresses [post]
+// @Param body body AddAddressBody true "address data"
+// @Security BearerAuth
+// @Success 201 {object} standardresponse.StandardResponse[CreateAddressResponse]
+// @Failure 400 {object} standardresponse.StandardResponse[any]
 func (h *AddressHttpHandler) AddAddress(c echo.Context) error {
 	var req AddAddressBody
 	if err := c.Bind(&req); err != nil {
@@ -45,11 +56,21 @@ func (h *AddressHttpHandler) AddAddress(c echo.Context) error {
 		return standardresponse.NewErrorResponse(c, err)
 	}
 
-	return c.JSON(201, map[string]any{
-		"id": address.ID,
+	return standardresponse.NewSuccessResponse(c, 201, CreateAddressResponse{
+		ID: address.ID,
 	})
 }
 
+// GetAddresses
+// @Summary Get addresses
+// @Description Get user addresses
+// @Tags Users
+// @Accept application/json
+// @Produce application/json
+// @Router /users/addresses [get]
+// @Security BearerAuth
+// @Success 200 {object} standardresponse.StandardResponse[[]AddressResponse]
+// @Failure 400 {object} standardresponse.StandardResponse[any]
 func (h *AddressHttpHandler) GetAddress(c echo.Context) error {
 	userID := c.Get("user_id").(int)
 	addresses, err := h.addressManagement.GetAddress(c.Request().Context(), userID)
@@ -60,9 +81,7 @@ func (h *AddressHttpHandler) GetAddress(c echo.Context) error {
 	var addressResponses []*AddressResponse
 	copier.Copy(&addressResponses, addresses)
 
-	return c.JSON(200, map[string]any{
-		"addresses": addresses,
-	})
+	return standardresponse.NewSuccessResponse(c, 200, addressResponses)
 }
 
 type AddressResponse struct {
@@ -72,4 +91,8 @@ type AddressResponse struct {
 	ZipCode   string  `json:"zip_code"`
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
+}
+
+type CreateAddressResponse struct {
+	ID int `json:"id"`
 }

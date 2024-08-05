@@ -3,7 +3,7 @@ package onboarding
 import (
 	"os"
 	"poc/internal/onboarding/adapter/handler"
-	"poc/internal/onboarding/adapter/repository"
+	"poc/internal/onboarding/adapter/repository/user"
 	"poc/internal/onboarding/usecase"
 	"poc/internal/shared/db"
 	"poc/internal/shared/middleware"
@@ -12,11 +12,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewHttpRoute(e *echo.Echo) {
+func NewHttpRoute(e *echo.Group) {
 	dbPool := db.NewPostgresqlConn()
 	handlerProvider := NewHandlerProvider(dbPool)
 
-	userGroup := e.Group("users")
+	userGroup := e.Group("/users")
+	userGroup.Use(middleware.RequestLoggerMiddleware)
 	userGroup.POST("/register", handlerProvider.registrationHandler.Register)
 
 	userGroup.POST("/addresses", handlerProvider.addressHandler.AddAddress, middleware.JWTMiddleware(os.Getenv("JWT_SECRET")))
@@ -29,7 +30,8 @@ type HandlerProvider struct {
 }
 
 func NewHandlerProvider(dbPool *pgxpool.Pool) *HandlerProvider {
-	userPostgresql := repository.NewUserPostgresql(dbPool)
+	userQuery := user.New(dbPool)
+	userPostgresql := user.NewUserPostgresql(userQuery)
 
 	tokenGenerator := usecase.NewJWTToken(os.Getenv("JWT_SECRET"), os.Getenv("JWT_PUBLIC"))
 

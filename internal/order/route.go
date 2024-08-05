@@ -4,6 +4,7 @@ import (
 	"os"
 	"poc/internal/order/adapter/handler"
 	"poc/internal/order/adapter/repository"
+	"poc/internal/order/adapter/repository/order"
 	"poc/internal/order/usecase"
 	"poc/internal/shared/db"
 	"poc/internal/shared/middleware"
@@ -12,11 +13,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewHttpRoute(e *echo.Echo) {
+func NewHttpRoute(e *echo.Group) {
 	dbPool := db.NewPostgresqlConn()
 	handlerProvider := NewHandlerProvider(dbPool)
 
-	userGroup := e.Group("orders")
+	userGroup := e.Group("/orders")
 	userGroup.POST("", handlerProvider.orderHandler.CreateOrder, middleware.JWTMiddleware(os.Getenv("JWT_SECRET")))
 }
 
@@ -25,7 +26,7 @@ type HandlerProvider struct {
 }
 
 func NewHandlerProvider(dbPool *pgxpool.Pool) *HandlerProvider {
-	orderPg := repository.NewOrderPostgresql(dbPool)
+	orderPg := order.NewOrderPostgresql(dbPool, order.New(dbPool))
 	addressPg := repository.NewAddressPostgresql(dbPool)
 	productMem := repository.NewProductInMemory()
 

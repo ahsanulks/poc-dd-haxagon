@@ -1,0 +1,16 @@
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users (id) ON DELETE SET NULL,
+    total_price DOUBLE PRECISION NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_addresses (
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders (id) ON DELETE CASCADE,
+    street VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    zip_code VARCHAR(20) NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL
+);

@@ -1,0 +1,240 @@
+basePath: /api/v1
+definitions:
+  handler.AddAddressBody:
+    properties:
+      city:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      street:
+        type: string
+      zip_code:
+        type: string
+    type: object
+  handler.AddressResponse:
+    properties:
+      city:
+        type: string
+      id:
+        type: integer
+      latitude:
+        type: number
+      longitude:
+        type: number
+      street:
+        type: string
+      zip_code:
+        type: string
+    type: object
+  handler.CreateAddressResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  handler.CreateOrderRequest:
+    properties:
+      address_id:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/handler.ProductRequest'
+        type: array
+    type: object
+  handler.CreateOrderResponse:
+    properties:
+      id:
+        type: integer
+    type: object
+  handler.ProductRequest:
+    properties:
+      id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  handler.RegistrationBody:
+    properties:
+      name:
+        type: string
+      phone_number:
+        type: string
+    type: object
+  handler.RegistrationResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  standardresponse.StandardResponse-any:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+    type: object
+  standardresponse.StandardResponse-array_handler_AddressResponse:
+    properties:
+      code:
+        type: string
+      data:
+        items:
+          $ref: '#/definitions/handler.AddressResponse'
+        type: array
+      message:
+        type: string
+    type: object
+  standardresponse.StandardResponse-handler_CreateAddressResponse:
+    properties:
+      code:
+        type: string
+      data:
+        $ref: '#/definitions/handler.CreateAddressResponse'
+      message:
+        type: string
+    type: object
+  standardresponse.StandardResponse-handler_CreateOrderResponse:
+    properties:
+      code:
+        type: string
+      data:
+        $ref: '#/definitions/handler.CreateOrderResponse'
+      message:
+        type: string
+    type: object
+  standardresponse.StandardResponse-handler_RegistrationResponse:
+    properties:
+      code:
+        type: string
+      data:
+        $ref: '#/definitions/handler.RegistrationResponse'
+      message:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /orders:
+    post:
+      consumes:
+      - application/json
+      description: Create new order
+      parameters:
+      - description: Order data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-handler_CreateOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Create new order
+      tags:
+      - Orders
+  /users/addresses:
+    get:
+      consumes:
+      - application/json
+      description: Get user addresses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-array_handler_AddressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Get addresses
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Add new user address
+      parameters:
+      - description: address data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddAddressBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-handler_CreateAddressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Add address
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register new user
+      parameters:
+      - description: User data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RegistrationBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-handler_RegistrationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/standardresponse.StandardResponse-any'
+      summary: Register new user
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: '"Bearer {token}". e.g Bearer thisIsMySecurityToken'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

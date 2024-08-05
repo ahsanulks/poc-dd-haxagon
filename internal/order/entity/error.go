@@ -1,8 +1,8 @@
 package entity
 
-import "errors"
+import businesserror "poc/internal/shared/business_error"
 
 var (
-	ErrProductRequired = errors.New("product is required")
-	ErrAddressRequired = errors.New("address is required")
+	ErrProductRequired = businesserror.NewBusinessError(businesserror.InputValidationError, "product is required")
+	ErrAddressRequired = businesserror.NewBusinessError(businesserror.InputValidationError, "address is required")
 )

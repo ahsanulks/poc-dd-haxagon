@@ -17,6 +17,17 @@ func NewOrderHttpHandler(orderUsecase adapter.OrderUsecase) *OrderHttpHandler {
 	return &OrderHttpHandler{orderUsecase: orderUsecase}
 }
 
+// Create new order
+// @Summary Create new order
+// @Description Create new order
+// @Tags Orders
+// @Accept application/json
+// @Produce application/json
+// @Router /orders [post]
+// @Security BearerAuth
+// @Param body body CreateOrderRequest true "Order data"
+// @Success 201 {object} standardresponse.StandardResponse[CreateOrderResponse]
+// @Failure 400 {object} standardresponse.StandardResponse[any]
 func (h *OrderHttpHandler) CreateOrder(c echo.Context) error {
 	var req CreateOrderRequest
 	if err := c.Bind(&req); err != nil {
@@ -34,9 +45,14 @@ func (h *OrderHttpHandler) CreateOrder(c echo.Context) error {
 	if err != nil {
 		return standardresponse.NewErrorResponse(c, err)
 	}
-	return c.JSON(200, map[string]any{
-		"id": order.ID,
+
+	return standardresponse.NewSuccessResponse(c, 201, CreateOrderResponse{
+		ID: order.ID,
 	})
+}
+
+type CreateOrderResponse struct {
+	ID int `json:"id"`
 }
 
 type CreateOrderRequest struct {

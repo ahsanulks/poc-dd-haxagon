@@ -1,0 +1,45 @@
+version: "2"
+overrides:
+  go:
+    overrides:
+      - db_type: "timestamptz"
+        nullable: true
+        engine: "postgresql"
+        go_type: "time.Time"
+      - db_type: "serial"
+        engine: "postgresql"
+        go_type: "int"
+sql:
+  - engine: "postgresql"
+    queries: "internal/onboarding/adapter/repository/user/user_query.sql"
+    schema: "internal/onboarding/adapter/repository/user/user_schema.sql"
+    gen:
+      go:
+        package: "user"
+        out: "internal/onboarding/adapter/repository/user"
+        sql_package: "pgx/v5"
+        emit_result_struct_pointers: true
+        emit_params_struct_pointers: true
+        overrides:
+          - column: "addresses.user_id"
+            go_type: "int"
+            nullable: true
+  - engine: "postgresql"
+    queries: "internal/order/adapter/repository/order/order_query.sql"
+    schema: "internal/order/adapter/repository/order/order_schema.sql"
+    gen:
+      go:
+        package: "order"
+        out: "internal/order/adapter/repository/order"
+        sql_package: "pgx/v5"
+        emit_result_struct_pointers: true
+        emit_params_struct_pointers: true
+        overrides:
+          - column: "orders.user_id"
+            go_type: "int"
+            nullable: true
+          - column: "order_addresses.order_id"
+            go_type: "int"
+            nullable: true
+
+  

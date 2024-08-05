@@ -10,7 +10,6 @@ import (
 
 func Run() {
 	e := echo.New()
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	route.NewRoute(e)
 	e.Start(":" + os.Getenv("APP_PORT"))
